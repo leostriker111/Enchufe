@@ -1,0 +1,59 @@
+name: pruebas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    name: Python ${{ matrix.python }} en ${{ matrix.so }}
+    runs-on: ${{ matrix.so }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # En Windows corre ademas la prueba de DPAPI; en Linux se salta sola.
+        so: [ubuntu-latest, windows-latest]
+        python: ["3.9", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Instalar
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Pruebas
+        run: pytest pruebas/ -v
+
+  datos-personales:
+    name: Que no se cuele nada personal
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Buscar correos, rutas y datos guardados
+        run: |
+          fallo=0
+          buscar() {
+            hit=$(grep -rInE "$2" --exclude-dir=.git --exclude-dir=docs \
+              --exclude=README.md --exclude=SECURITY.md --exclude=CONTRIBUTING.md . || true)
+            if [ -n "$hit" ]; then echo "::error::$1"; echo "$hit"; fallo=1; fi
+          }
+          # Un 192.168.1.x generico en el codigo o los ejemplos es normal y no
+          # se busca; lo que no puede estar es un correo o una ruta de usuario.
+          buscar "Correo escrito a mano" '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+          buscar "Ruta de usuario de Windows" 'C:\\+Users\\+[A-Za-z]'
+          for f in enchufes.json sesiones.json secreto.bin; do
+            if [ -e "$f" ]; then echo "::error::$f no se publica"; fallo=1; fi
+          done
+          [ "$fallo" = "0" ] && echo "Limpio."
+          exit $fallo

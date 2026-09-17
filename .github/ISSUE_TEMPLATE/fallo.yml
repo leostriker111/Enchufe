@@ -1,0 +1,55 @@
+name: Reportar un fallo
+description: Algo no hace lo que debería
+labels: ["fallo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportarlo.
+
+        > [!WARNING]
+        > **No pegues tu `sesiones.json` ni tu `secreto.bin`.** Llevan el token
+        > de tu cuenta. Y quítale la IP/MAC a lo que compartas si te incomoda.
+
+  - type: textarea
+    id: que-pasa
+    attributes:
+      label: Qué pasa
+    validations:
+      required: true
+
+  - type: dropdown
+    id: donde
+    attributes:
+      label: Dónde falla
+      options:
+        - Buscar los enchufes en la red
+        - Prender / apagar en local
+        - Entrar a la nube (login)
+        - Prender / apagar por la nube
+        - El seguro (--forzar)
+        - Al instalar
+    validations:
+      required: true
+
+  - type: input
+    id: modelo
+    attributes:
+      label: Modelo del enchufe
+      description: Lo que muestra `enchufe buscar`, y la marca/app (Vanance, Briturn, MagicHue…).
+    validations:
+      required: true
+
+  - type: input
+    id: entorno
+    attributes:
+      label: Sistema y Python
+      placeholder: Windows 11, Python 3.12
+    validations:
+      required: true
+
+  - type: textarea
+    id: salida
+    attributes:
+      label: Qué imprimió
+      render: shell

@@ -1,0 +1,33 @@
+# --- Datos de quien lo usa ---------------------------------------------------
+# La config, la sesion, la clave cifrada y la bitacora viven en
+# %LOCALAPPDATA%\enchufe; aqui solo aparecerian si corres desde el codigo.
+# Nada de eso se publica: la clave (aunque este cifrada) y la lista de tus
+# enchufes con sus IP y MAC son tuyas.
+enchufes.json
+sesiones.json
+nube.json
+secreto.bin
+*.log
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+build/
+dist/
+.pytest_cache/
+
+# --- Sistema y editores ------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# el lanzador local (rutas de esta maquina); el comando publicado sale de pip
+enchufe.bat
